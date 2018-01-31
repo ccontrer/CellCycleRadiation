@@ -31,12 +31,12 @@ function PlotSolution(sol, rad=false)
     ax1[:plot](sol.t, sol[6, :], color=gray1, lw=mylw, label="APC") # APC
     # ax1[:plot](sol.t, sol[2, :], color = "LimeGreen", lw=mylw, label="MPF\$_P\$") # MPF_P
     ax1[:plot](sol.t, sol[1, :], color=green2, lw=mylw, label="MPF") # MPF
-    ax2[:plot](sol.t, sol[10, :], color="black", lw=mylw, label="Mass") #Mass 
+    ax2[:plot](sol.t, sol[7, :], color="black", lw=mylw, label="Mass") #Mass 
     ax1[:plot]([sol.t[1], sol.t[end]], [-1, -1], color="black", lw=mylw, label="Mass") #Phantom Mass for lagend
     if rad
-        ax1[:plot](sol.t, sol[7, :], "--", color=blue3, lw=mylw, label="Chk2", alpha=0.9) # Chk2
-        ax1[:plot](sol.t, sol[8, :]/35., "--", color=green3, lw=mylw, label="ATM", alpha =0.6) # ATM
-        ax1[:plot](sol.t, sol[9, :]/35., "--", color=blue2, lw=mylw, label="DSB", alpha =0.6) # DSB
+        ax1[:plot](sol.t, sol[8, :], "--", color=blue3, lw=mylw, label="Chk2", alpha=0.9) # Chk2
+        ax1[:plot](sol.t, sol[9, :]/35., "--", color=green3, lw=mylw, label="ATM", alpha =0.6) # ATM
+        ax1[:plot](sol.t, sol[10, :]/35., "--", color=blue2, lw=mylw, label="DSB", alpha =0.6) # DSB
         #=
         rad_start = sol.prob.f.params[41]
         rad_dur = sol.prob.f.params[42]
@@ -51,7 +51,7 @@ function PlotSolution(sol, rad=false)
     ax1[:fill_between](sol.t, -1, -1, facecolor=colM, edgecolor="gray", alpha = 0.8, label="M-phase")
     leg = ax1[:legend](loc="upper left", bbox_to_anchor=(1.12, 1.0), fontsize=12, labelspacing=0.3, borderpad=0.4)
     leg[:set_zorder](6)
-    xlabel("time (hrs)", fontsize=14)
+    ax1[:set_xlabel]("time (hr)", fontsize=14)
     ax1[:set_ylabel]("Concentration", fontsize=14)
     ax2[:set_ylabel]("Cell mass", fontsize=14)
     # str_Dose = @sprintf("\$D = %4.2f\$", TrapRule(map(DoseRate, t), t))
@@ -62,7 +62,7 @@ function PlotSolution(sol, rad=false)
     factor = (max - min)/100*4
     xlim(0.0, sol.t[end])
     ax1[:set_ylim](min - factor, max + factor)
-    ax2[:set_ylim](0.0, params.K_Mass)
+    ax2[:set_ylim](0.0, sol.prob.p.K_Mass)
     
     # Cell cycle stages
     divider = axgrid.make_axes_locatable(ax1)
