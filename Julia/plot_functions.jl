@@ -22,7 +22,6 @@ gray1 = "#888888"
 @pyimport mpl_toolkits.axes_grid1 as axgrid
 
 function PlotSolution(sol, rad=false)
-    clf()
     fig, ax1 = subplots()
     mylw = 2
     ax2 = ax1[:twinx]()
@@ -32,7 +31,7 @@ function PlotSolution(sol, rad=false)
     # ax1[:plot](sol.t, sol[2, :], color = "LimeGreen", lw=mylw, label="MPF\$_P\$") # MPF_P
     ax1[:plot](sol.t, sol[1, :], color=green2, lw=mylw, label="MPF") # MPF
     ax2[:plot](sol.t, sol[7, :], color="black", lw=mylw, label="Mass") #Mass 
-    ax1[:plot]([sol.t[1], sol.t[end]], [-1, -1], color="black", lw=mylw, label="Mass") #Phantom Mass for lagend
+    # ax1[:plot]([sol.t[1], sol.t[end]], [-1, -1], color="black", lw=mylw, label="Mass") #Phantom Mass for lagend
     if rad
         ax1[:plot](sol.t, sol[8, :], "--", color=blue3, lw=mylw, label="Chk2", alpha=0.9) # Chk2
         ax1[:plot](sol.t, sol[9, :]/35., "--", color=green3, lw=mylw, label="ATM", alpha =0.6) # ATM
@@ -49,8 +48,9 @@ function PlotSolution(sol, rad=false)
     end
     ax1[:fill_between](sol.t, -1, -1, facecolor=colI, edgecolor="gray", alpha = 0.8, label="Interphase")
     ax1[:fill_between](sol.t, -1, -1, facecolor=colM, edgecolor="gray", alpha = 0.8, label="M-phase")
-    leg = ax1[:legend](loc="upper left", bbox_to_anchor=(1.12, 1.0), fontsize=12, labelspacing=0.3, borderpad=0.4)
-    leg[:set_zorder](6)
+    handles, labels = unite_legends([ax2, ax1])
+    leg = ax2[:legend](handles, labels, loc="upper right", fontsize=12, labelspacing=0.3, borderpad=0.3)
+    leg[:get_frame]()[:set_alpha](0.98)
     ax1[:set_xlabel]("time (hr)", fontsize=14)
     ax1[:set_ylabel]("Concentration", fontsize=14)
     ax2[:set_ylabel]("Cell mass", fontsize=14)
@@ -82,7 +82,8 @@ function PlotSolution(sol, rad=false)
     ax0[:xaxis][:set_ticks_position]("none")
     ax0[:yaxis][:set_ticks_position]("none")
     axis([0., sol.t[end], 0., 1.])
-    sca(ax1)
+    divider = axgrid.make_axes_locatable(ax2)
+    ax0 = divider[:new_vertical](size="4%")
 
     gcf()
 end # PlotSol
@@ -120,3 +121,12 @@ function PlotBifurcation(curve::BifurcationCurve, vars)
     end
 end
 
+function unite_legends(axes)
+    h, l = PyCall.PyObject[], String[]
+    for ax in axes
+        tmp = ax[:get_legend_handles_labels]()
+        append!(h,tmp[1])
+        append!(l,tmp[2])
+    end
+    return h, l
+end
