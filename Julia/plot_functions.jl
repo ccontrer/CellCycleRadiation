@@ -113,18 +113,19 @@ function PlotBifurcation(curve::BifurcationCurve, vars)
     x0 = 1
     x = curve.d[vars[1]]
     y = curve.d[vars[2]]
-    for i in 1:length(curve.changes)
-        xf = curve.changes[i]
-        idx = x0:xf
-        plot(x[idx], y[idx], c=c[curve.stab[x0+1]], ls=ls[curve.stab[x0+1]], lw=lw[curve.stab[x0+1]])
-        x0 = xf
-    end
-    xf = len
-    idx = x0:xf
     if typeof(y)<:Dict
+        idx = x0:len
         plot(x[idx], y[:min][idx], c=c[curve.stab[x0+1]], ls=ls[curve.stab[x0+1]], lw=lw[curve.stab[x0+1]])
         plot(x[idx], y[:max][idx], c=c[curve.stab[x0+1]], ls=ls[curve.stab[x0+1]], lw=lw[curve.stab[x0+1]])
     else
+        for i in 1:length(curve.changes)
+            xf = curve.changes[i]
+            idx = x0:xf
+            plot(x[idx], y[idx], c=c[curve.stab[x0+1]], ls=ls[curve.stab[x0+1]], lw=lw[curve.stab[x0+1]])
+            x0 = xf
+        end
+        xf = len
+        idx = x0:xf
         plot(x[idx], y[idx], c=c[curve.stab[x0+1]], ls=ls[curve.stab[x0+1]], lw=lw[curve.stab[x0+1]])
     end
     points = curve.special_points
